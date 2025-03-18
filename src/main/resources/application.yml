@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/fmchat
+    username: root
+    password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+JWT:
+  secret: 9efaffeddc7efee0a2eb38543bf0fc8e7eb66072ea6094979d8d2c493e3ef151
+  expiration: 86400000
+
