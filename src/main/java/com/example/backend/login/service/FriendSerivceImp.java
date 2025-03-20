@@ -4,6 +4,7 @@ import com.example.backend.global.GlobalException;
 import com.example.backend.global.ResponseStatus;
 import com.example.backend.login.domain.Friend;
 import com.example.backend.login.domain.Member;
+import com.example.backend.login.dto.req.FriendRequestReqDto;
 import com.example.backend.login.enums.FriendType;
 import com.example.backend.login.repository.FriendRepository;
 import com.example.backend.login.repository.MemberRespository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Service
 @Slf4j
@@ -32,34 +34,38 @@ public class FriendSerivceImp implements FriendService {
         Member member = memberRespository.findByUuid(uuid)
                 .orElseThrow(() -> new GlobalException(ResponseStatus.NOT_FOUND_MEMBER));
 
-        List<Friend> friendList = friendRepository.findByMember(member);
+        List<Friend> friendList = friendRepository.findByMemberAndStatus(member,
+        type.equals("all") ? FriendType.FRIEND : type.equals("send") ? FriendType.SENDER : type.equals("receive") ? FriendType.RECEIVER: null);
+
         List<String> friendUuidList = new ArrayList<>();
 
-        //친구 리스트
-        if (type.equals("all")){
+        for (Friend friend : friendList){
+            friendUuidList.add(friend.getFriendUuid());
+        }
 
-            for (Friend friend : friendList){
-                if (friend.getStatus() == FriendType.FRIEND)
-                    friendUuidList.add(friend.getFriendUuid());
-            }
-        }
-        //내가 보낸 요청 리스트
-        else if (type.equals("request")){
-
-            for (Friend friend : friendList){
-                if (friend.getStatus() == FriendType.SENDER){
-                    friendUuidList.add(friend.getFriendUuid());
-                }
-            }
-        }
-        //내가 받은 요청 리스트
-        else if (type.equals("response")){
-            for (Friend friend : friendList){
-                if (friend.getStatus() == FriendType.SENDER){
-                    friendUuidList.add(friend.getFriendUuid());
-                }
-            }
-        }
         return friendUuidList;
+    }
+
+    @Override
+    public Void friendRequest(String uuid, FriendRequestReqDto friendRequestReqDto) {
+
+        Friend friend = Friend.builder()
+                .member(memberRespository.findByUuid(uuid).get())
+                .friendUuid(friendRequestReqDto.getFriendUuid())
+                .status(FriendType.SENDER)
+                .build();
+
+        friendRepository.save(friend);
+
+        //친구 객체
+        Friend friend2 = Friend.builder()
+                .member(memberRespository.findByUuid(friendRequestReqDto.getFriendUuid()).get())
+                .friendUuid(uuid)
+                .status(FriendType.RECEIVER)
+                .build();
+
+        friendRepository.save(friend2);
+
+        return null;
     }
 }
