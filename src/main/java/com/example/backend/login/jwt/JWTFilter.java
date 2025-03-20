@@ -10,9 +10,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
@@ -34,7 +37,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        System.out.println("authorization now");
+
         //Bearer 부분 제거 후 순수 토큰만 획득
         String token = authorization.split(" ")[1];
 
@@ -49,6 +52,13 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //토큰에서 uuid 획득
         String uuid = jwtUtil.getUuid(token);
+
+        // SecurityContextHolder에 인증 정보를 저장
+        User principal = new User(uuid, "", Collections.emptyList());
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+
 
         //UserDto를 생성하여 값 set
         UserDto userDto = UserDto.builder()
