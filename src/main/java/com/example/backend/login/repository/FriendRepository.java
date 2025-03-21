@@ -6,9 +6,11 @@ import com.example.backend.login.enums.FriendType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FriendRepository extends JpaRepository<Friend, Long> {
-    List<Friend> findByMember(Member member);
 
-    List<Friend> findByMemberAndStatus(Member member, FriendType friendType);
+    List<Friend> findByUuidAndStatus(String uuid, FriendType friendType);
+
+    Optional<Friend> findByUuidAndFriend(String uuid, Member member);
 }

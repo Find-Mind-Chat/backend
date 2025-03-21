@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FriendRequestReqDto {
+public class FriendUuidReqDto {
 
     private String friendUuid;
 }

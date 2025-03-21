@@ -15,19 +15,19 @@ public class Friend {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member member;
+    private String uuid;
 
-    private String friendUuid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member friend;
 
     private Boolean star;
 
     private FriendType status;
 
     @Builder
-    public Friend(Member member, String friendUuid, Boolean star, FriendType status) {
-        this.member = member;
-        this.friendUuid = friendUuid;
+    public Friend(String uuid, Member friend, Boolean star, FriendType status) {
+        this.uuid = uuid;
+        this.friend = friend;
         this.star = star;
         this.status = status;
     }
