@@ -25,7 +25,8 @@ public enum ResponseStatus {
      * 600: member
      **/
 
-    NOT_FOUND_MEMBER(600, "회원을 찾을 수 없습니다.");
+    NOT_FOUND_MEMBER(600, "회원을 찾을 수 없습니다."),
+    NOT_FRIEND(601, "친구 상태가 아닙니다");
 
     private final int code;
     private final String message;

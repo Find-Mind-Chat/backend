@@ -2,13 +2,11 @@ package com.example.backend.login.domain;
 
 import com.example.backend.login.enums.FriendType;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Friend {
 
@@ -22,6 +20,7 @@ public class Friend {
 
     private Boolean star;
 
+    @Enumerated(EnumType.STRING)
     private FriendType status;
 
     @Builder
@@ -31,4 +30,5 @@ public class Friend {
         this.star = star;
         this.status = status;
     }
+
 }

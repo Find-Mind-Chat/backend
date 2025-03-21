@@ -1,5 +1,6 @@
 package com.example.backend.login.controller;
 
+import com.example.backend.global.ResponseStatus;
 import com.example.backend.login.dto.res.FriendInfoResDto;
 import com.example.backend.login.jwt.dto.CustomUserDetails;
 import com.example.backend.login.service.FriendService;
@@ -38,8 +39,9 @@ public class FriendController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody FriendUuidReqVo friendUuidReqVo) {
         String uuid = customUserDetails.getUsername();
+        friendService.friendRequest(uuid, FriendUuidReqVo.voToDto(friendUuidReqVo));
 
-        return new ResponseEntity<>(ResponseSuccess.FRIEND_ADD_SUCCESS, friendService.friendRequest(uuid, FriendUuidReqVo.voToDto(friendUuidReqVo)));
+        return new ResponseEntity<>(ResponseSuccess.FRIEND_REQUEST_SUCCESS);
     }
 
     //친구 삭제
@@ -49,8 +51,57 @@ public class FriendController {
             @RequestBody FriendUuidReqVo friendUuidReqVo){
 
         String uuid = customUserDetails.getUsername();
+        friendService.friendDelete(uuid, FriendUuidReqVo.voToDto(friendUuidReqVo));
 
-        return new ResponseEntity<>(ResponseSuccess.FRIEND_DELETE_SUCCESS, friendService.friendDelete(uuid, FriendUuidReqVo.voToDto(friendUuidReqVo)));
+        return new ResponseEntity<>(ResponseSuccess.FRIEND_DELETE_SUCCESS);
     }
+
+    //친구 요청 수락
+    @PutMapping("/accept")
+    public ResponseEntity<Void> friendAccept(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody FriendUuidReqVo friendUuidReqVo){
+
+        String uuid = customUserDetails.getUsername();
+        friendService.friendAccept(uuid, FriendUuidReqVo.voToDto(friendUuidReqVo));
+
+        return new ResponseEntity<>(ResponseSuccess.FRIEND_ACCEPT_SUCCESS);
+    }
+
+    //친구 요청 거절
+    @PutMapping("/reject")
+    public ResponseEntity<Void> friendReject(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody FriendUuidReqVo friendUuidReqVo){
+
+        String uuid = customUserDetails.getUsername();
+        friendService.friendDelete(uuid, FriendUuidReqVo.voToDto(friendUuidReqVo));
+
+        return new ResponseEntity<>(ResponseSuccess.FRIEND_REJECT_SUCCESS);
+    }
+
+    //즐겨찾기 등록/해제
+    @PutMapping("/star")
+    public ResponseEntity<Void> friendStar(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam (value="is", required = false, defaultValue = "true") boolean is,
+            @RequestBody FriendUuidReqVo friendUuidReqVo){
+
+        String uuid = customUserDetails.getUsername();
+        friendService.friendStar(uuid, is,FriendUuidReqVo.voToDto(friendUuidReqVo));
+
+        return new ResponseEntity<>(ResponseSuccess.FRIEND_STAR_SUCCESS);
+    }
+
+    //즐겨찾기 목록 조회
+    @GetMapping("/star/list")
+    public ResponseEntity<List<FriendInfoResDto>> friendStarList(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        String uuid = customUserDetails.getUsername();
+
+        return new ResponseEntity<>(ResponseSuccess.FREIND_STAR_LIST_SUCCESS, friendService.friendStarList(uuid));
+    }
+
+
 
 }

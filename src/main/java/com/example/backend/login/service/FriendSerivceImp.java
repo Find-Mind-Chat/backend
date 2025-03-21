@@ -41,12 +41,13 @@ public class FriendSerivceImp implements FriendService {
     }
 
     @Override
-    public Void friendRequest(String uuid, FriendUuidReqDto friendUuidReqDto) {
+    public void friendRequest(String uuid, FriendUuidReqDto friendUuidReqDto) {
 
         Friend friend = Friend.builder()
                 .uuid(uuid)
                 .friend(memberRespository.findByUuid(friendUuidReqDto.getFriendUuid()))
                 .status(FriendType.SENDER)
+                .star(false)
                 .build();
 
         friendRepository.save(friend);
@@ -56,15 +57,15 @@ public class FriendSerivceImp implements FriendService {
                 .uuid(friendUuidReqDto.getFriendUuid())
                 .friend(memberRespository.findByUuid(uuid))
                 .status(FriendType.RECEIVER)
+                .star(false)
                 .build();
 
         friendRepository.save(friend2);
 
-        return null;
     }
 
     @Override
-    public Void friendDelete(String uuid, FriendUuidReqDto friendUuidReqDto) {
+    public void friendDelete(String uuid, FriendUuidReqDto friendUuidReqDto) {
 
         Member member = memberRespository.findByUuid(friendUuidReqDto.getFriendUuid());
 
@@ -78,7 +79,46 @@ public class FriendSerivceImp implements FriendService {
 
         friendRepository.delete(friend2);
 
-        return null;
+    }
+
+    @Override
+    public void friendAccept(String uuid, FriendUuidReqDto friendUuidReqDto) {
+
+        Member member = memberRespository.findByUuid(friendUuidReqDto.getFriendUuid());
+        Member member2 = memberRespository.findByUuid(uuid);
+
+        Friend friend = friendRepository.findByUuidAndFriend(uuid, member)
+                .orElseThrow(() -> new GlobalException(ResponseStatus.NOT_FOUND_MEMBER));
+        Friend friend2 = friendRepository.findByUuidAndFriend(member.getUuid(), member2)
+                .orElseThrow(() -> new GlobalException(ResponseStatus.NOT_FOUND_MEMBER));
+
+        friend.setStatus(FriendType.FRIEND);
+        friend2.setStatus(FriendType.FRIEND);
+    }
+
+    @Override
+    public void friendStar(String uuid, boolean is,FriendUuidReqDto friendUuidReqDto) {
+
+        Member member = memberRespository.findByUuid(friendUuidReqDto.getFriendUuid());
+
+        Friend friend = friendRepository.findByUuidAndFriend(uuid, member)
+                .orElseThrow(() -> new GlobalException(ResponseStatus.NOT_FOUND_MEMBER));
+
+        if (friend.getStatus() != FriendType.FRIEND) {
+            throw new GlobalException(ResponseStatus.NOT_FRIEND);
+        }
+
+        friend.setStar(is);
+
+    }
+
+    @Override
+    public List<FriendInfoResDto> friendStarList(String uuid) {
+
+        List<Friend> friendList = friendRepository.findByUuidAndStar(uuid, true);
+
+        return friendList.stream().map(friend -> FriendInfoResDto.EntityToDto(friend.getFriend()))
+                .toList();
     }
 
 }

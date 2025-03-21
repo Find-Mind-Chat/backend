@@ -13,4 +13,6 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
     List<Friend> findByUuidAndStatus(String uuid, FriendType friendType);
 
     Optional<Friend> findByUuidAndFriend(String uuid, Member member);
+
+    List<Friend> findByUuidAndStar(String uuid, boolean b);
 }
