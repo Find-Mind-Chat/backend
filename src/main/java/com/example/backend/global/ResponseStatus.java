@@ -19,8 +19,14 @@ public enum ResponseStatus {
     INVALID_TOKEN_FORMAT( 904, "토큰 형식이 유효하지 않습니다."),
     MISSING_TOKEN_KID( 905, "토큰의 kid가 없습니다."),
     NOT_FOUND_MATCHING_KEY( 906, "매칭되는 키가 없습니다."),
-    NOT_FOUND_AUTHORIZATION_HEADER( 907, "Authorization 헤더가 없습니다.");
+    NOT_FOUND_AUTHORIZATION_HEADER( 907, "Authorization 헤더가 없습니다."),
 
+    /**
+     * 600: member
+     **/
+
+    NOT_FOUND_MEMBER(600, "회원을 찾을 수 없습니다."),
+    NOT_FRIEND(601, "친구 상태가 아닙니다");
 
     private final int code;
     private final String message;
